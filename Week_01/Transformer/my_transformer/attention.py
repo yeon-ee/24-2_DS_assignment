@@ -1,35 +1,35 @@
-# attention.py
 import torch
 import torch.nn as nn
 import math
 import torch.nn.functional as F
+from typing import Optional, Tuple
 
 class QueryLayer(nn.Module):
-    def __init__(self, d_model, n_heads):
+    def __init__(self, d_model: int, n_heads: int) -> None:
         super(QueryLayer, self).__init__()
         self.linear = nn.Linear(d_model, d_model * n_heads)
     
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
 
 class KeyLayer(nn.Module):
-    def __init__(self, d_model, n_heads):
+    def __init__(self, d_model: int, n_heads: int) -> None:
         super(KeyLayer, self).__init__()
         self.linear = nn.Linear(d_model, d_model * n_heads)
     
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
 
 class ValueLayer(nn.Module):
-    def __init__(self, d_model, n_heads):
+    def __init__(self, d_model: int, n_heads: int) -> None:
         super(ValueLayer, self).__init__()
         self.linear = nn.Linear(d_model, d_model * n_heads)
     
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
 
 class ScaledDotProductAttention(nn.Module):
-    def forward(self, q, k, v, mask=None):
+    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, mask: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
         d_k = q.size(-1)
         scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
         if mask is not None:
@@ -38,7 +38,7 @@ class ScaledDotProductAttention(nn.Module):
         return torch.matmul(attention, v), attention
 
 class MultiHeadAttention(nn.Module):
-    def __init__(self, d_model, n_heads):
+    def __init__(self, d_model: int, n_heads: int) -> None:
         super(MultiHeadAttention, self).__init__()
         self.n_heads = n_heads
         self.d_model = d_model
@@ -49,7 +49,7 @@ class MultiHeadAttention(nn.Module):
         self.attention = ScaledDotProductAttention()
         self.fc = nn.Linear(n_heads * d_model, d_model)
     
-    def forward(self, x, mask=None):
+    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
         batch_size = x.size(0)
         
         q = self.query_layers(x).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)

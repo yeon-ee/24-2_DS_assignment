@@ -10,7 +10,6 @@ class Transformer(nn.Module):
         self.encoder_embedding = TokenEmbedding(src_vocab_size, d_model)
         self.decoder_embedding = TokenEmbedding(tgt_vocab_size, d_model)
         self.position_embedding = PositionEmbedding(d_model)
-        
         self.encoder_layers = nn.ModuleList([
             TransformerEncoderLayer(d_model, n_heads, d_ff, dropout) 
             for _ in range(num_encoder_layers)
