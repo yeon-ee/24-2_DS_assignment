@@ -28,9 +28,9 @@ class TransformerDecoderLayer(nn.Module):
                 memory: torch.Tensor, 
                 src_mask: Optional[torch.Tensor] = None, 
                 tgt_mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        x = self.residual1(x, lambda x: self.dropout1(self.self_attn(x, tgt_mask)))
+        x = self.residual1(x, lambda x: self.dropout1(self.self_attn(x, x, x, tgt_mask)))
         x = self.norm1(x)
-        x = self.residual2(x, lambda x: self.dropout2(self.cross_attn(x, src_mask)))
+        x = self.residual2(x, lambda x: self.dropout2(self.cross_attn(x,memory,memory, src_mask)))
         x = self.norm2(x)
         x = self.residual3(x, lambda x: self.dropout3(self.ff(x)))
         x = self.norm3(x)

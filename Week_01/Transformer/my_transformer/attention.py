@@ -49,12 +49,12 @@ class MultiHeadAttention(nn.Module):
         self.attention = ScaledDotProductAttention()
         self.fc = nn.Linear(n_heads * d_model, d_model)
     
-    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        batch_size = x.size(0)
+    def forward(self, Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
+        batch_size = Q.size(0)
         
-        q = self.query_layers(x).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
-        k = self.key_layers(x).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
-        v = self.value_layers(x).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
+        q = self.query_layers(Q).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
+        k = self.key_layers(K).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
+        v = self.value_layers(V).view(batch_size, -1, self.n_heads, self.d_model).transpose(1, 2)
         
         attn_output, attn = self.attention(q, k, v, mask)
         attn_output = attn_output.transpose(1, 2).contiguous().view(batch_size, -1, self.n_heads * self.d_model)
