@@ -18,7 +18,8 @@ class TransformerEncoderLayer(nn.Module):
         self.residual1 = ResidualConnection()
         self.residual2 = ResidualConnection()
     
-    def forward(self, x: Tensor, mask: Optional[Tensor] = None) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
+        mask = None
         x = self.residual1(x, lambda x: self.dropout1(self.self_attn(x, x, x, mask)))
         x = self.norm1(x)
         x = self.residual2(x, lambda x: self.dropout2(self.ff(x)))
